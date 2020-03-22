@@ -8,10 +8,12 @@
     "@testing-library/user-event": "^7.2.1",
     "bootstrap": "^4.4.1",
     "leaflet": "^1.6.0",
+    "leaflet.markercluster": "^1.4.1",
     "react": "^16.13.0",
     "react-bootstrap": "^1.0.0-beta.17",
     "react-dom": "^16.13.0",
     "react-leaflet": "^2.6.3",
+    "react-leaflet-markercluster": "^2.0.0-rc3",
     "react-scripts": "3.4.0"
   },
   "scripts": {
@@ -34,5 +36,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "css-loader": "^3.4.2",
+    "style-loader": "^1.1.3"
   }
 }

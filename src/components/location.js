@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
 import { Button, Form, Col, Row } from 'react-bootstrap';
 import LocationResult from './locationResult';
-import { Map, Marker, Popup, TileLayer } from "react-leaflet";
+import MarkerClusterGroup from 'react-leaflet-markercluster';
+import { Map, Popup, Marker, TileLayer, Tooltip } from "react-leaflet";
+import 'react-leaflet-markercluster/dist/styles.min.css';
 /* import { Icon } from "leaflet"; */
 
 class Location extends Component {
     state = {
         value: '',
         data: null,
-        position: [0, 0]
+        position: [0, 0],
+        pois: null
     };
 
     constructor(props) {
@@ -17,6 +20,27 @@ class Location extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleListItemSelect = this.handleListItemSelect.bind(this);
+    }
+
+    componentDidMount() {
+        //alert("");
+        fetch("pois.json")
+        .then(res => res.json())
+        .then(
+            (result) => {
+            this.setState({
+                pois: result.pois
+            });
+            },
+            // Note: it's important to handle errors here
+            // instead of a catch() block so that we don't swallow
+            // exceptions from actual bugs in components.
+            (error) => {
+            this.setState({
+                pois: null
+            });
+            }
+        )
     }
 
     handleChange(event) {
@@ -40,6 +64,14 @@ class Location extends Component {
         //event.preventDefault();
     }
 
+    handleViewPortChanged(viewport) {
+        //alert(viewport.zoom);
+    }
+
+    onMapMoveEnd(event) {
+        //alert(event.target.getBounds());
+    }
+
     render() {
         return (
             <div>
@@ -60,13 +92,29 @@ class Location extends Component {
                     </Col>
                     <Col>
                         <div>
-                            <Map center={this.state.position} zoom={12} style={ {height:"100vh"} }>
+                            <Map center={this.state.position} zoom={12} style={ {height:"100vh"} }
+                                onViewportChanged={this.handleViewPortChanged}
+                                onMoveend={this.onMapMoveEnd}>
                                 <TileLayer
                                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                                 />
-                                <Marker key="posi1"
-                                    position={this.state.position} />
+                                {<MarkerClusterGroup>
+                                    {this.state.pois && this.state.pois.map(e =>
+                                        <Marker key={e.id} position={e.pos}>
+                                            <Popup>
+                                                <span>{e.name}</span>
+                                            </Popup>
+                                            <Tooltip>
+                                                <span>{e.name}</span>
+                                            </Tooltip>
+                                        </Marker>
+                                    )}
+                                </MarkerClusterGroup>}
+                                {<Marker key="posi1"
+                                    position={this.state.position}>
+                                        <Tooltip>Standort</Tooltip>
+                                </Marker>}
                             </Map>
                         </div>
                     </Col>
